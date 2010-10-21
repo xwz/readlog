@@ -1,0 +1,64 @@
+#!/usr/bin/env python -u
+import sys
+from optparse import OptionParser
+from log_reader import ApacheReader
+import urlparse
+import cgi
+import datetime
+import time
+
+supported_columns = [
+    'ips', 
+    'username', 
+    'ident', 
+    'time', 
+    'tz', 
+    'method', 
+    'path', 
+    'protocol', 
+    'status', 
+    'size',
+    'referer', 
+    'user-agent', 
+]
+
+def cli_options():
+    """
+    Returns column names and query parameter names for display.
+    """
+    parser = OptionParser()
+    parser.add_option("-c", "--columns", dest="columns", 
+            help="comma delimited list of columns, available columns: %s" % ", ".join(supported_columns))
+    parser.add_option("-p", "--params", dest="params",
+            help="comma delimited list of query parameter names")
+    parser.add_option("-d", "--date", dest="date",
+            help="date format, default is unixtimestamp")
+    options, args = parser.parse_args()
+    if options.columns:
+        columns = [c for c in options.columns.split(",") if c in supported_columns]
+    else:
+        columns = []
+    if options.params:
+        params = options.params.split(",")
+    else:
+        params = []
+    if len(params)==0 and len(columns)==0:
+        columns = supported_columns
+    return columns, params, options.date
+    
+def readlog(columns, params, dateformat):
+    for log in ApacheReader(sys.stdin):
+        log["ips"] = ",".join(log["ips"])
+        if dateformat:
+            log["time"] = log["time"].strftime(dateformat)
+        else:
+            log["time"] = "%d" % time.mktime(log["time"].timetuple())
+        url = urlparse.urlparse(log["path"])
+        query = dict(cgi.parse_qsl(url.query, True))
+        info = [log[col] for col in columns if col in log]
+        info = info + [query[param] for param in params if param in query]
+        print " ".join(str(i) for i in info)
+
+if __name__ == "__main__":
+    columns, params, dateformat = cli_options()
+    readlog(columns, params, dateformat)
