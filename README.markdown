@@ -1,4 +1,4 @@
-`readlog` - cuts apache log into pieces
+readlog - cuts apache log into pieces
 =======================================
 
 Pipe apache style combined logs into `readlog` to display selective display 
@@ -22,11 +22,11 @@ Command line options
 
 `readlog` offers 3 command line options: 
 
-* `--columns'   - comma delimited list of column names
+* `--columns`   - comma delimited list of column names
 * `--params`    - comma delimited list of query parameter names
 * `--date`      - date format pattern, default is Unix epoch
 
-The available column names, see http://httpd.apache.org/docs/2.2/logs.html#accesslog 
+The available column names, see <http://httpd.apache.org/docs/2.2/logs.html#accesslog 
 for details
 
 * `ips`         - IP address of the client (remote host) 
@@ -52,7 +52,9 @@ Example: show the query parameter values with name equal to `page` and `type`
 The option `--params` and `--columns` can be combined.
 
 The `--date` option defines the date format for the time column. For format 
-patterns see http://docs.python.org/library/datetime.html#strftime-and-strptime-behavior
+patterns see:
+
+http://docs.python.org/library/datetime.html#strftime-and-strptime-behavior
 
 
 Credits
