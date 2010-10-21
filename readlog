@@ -13,8 +13,11 @@ supported_columns = [
     'ident', 
     'time', 
     'tz', 
-    'method', 
+    'method',
+    'url',
     'path', 
+    'query',
+    'fragment',
     'protocol', 
     'status', 
     'size',
@@ -52,8 +55,12 @@ def readlog(columns, params, dateformat):
         if dateformat:
             log["time"] = log["time"].strftime(dateformat)
         else:
-            log["time"] = "%d" % time.mktime(log["time"].timetuple())
+            log["time"] = "%d" % time.mktime(log["time"].timetuple())            
         url = urlparse.urlparse(log["path"])
+        log["url"] = log["path"]
+        log["path"] = url.path
+        log["query"] = url.query
+        log["fragment"] = url.fragment
         query = dict(cgi.parse_qsl(url.query, True))
         info = [log[col] for col in columns if col in log]
         info = info + [query[param] for param in params if param in query]

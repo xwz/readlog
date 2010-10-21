@@ -33,8 +33,11 @@ for details
 * `ident`       - identity 
 * `time`        - time that the request was received
 * `tz`          - timezone
-* `method`      - the method used by the client 
-* `path`        - requested resource
+* `method`      - method used by the client 
+* `url`         - requested url
+* `path`        - hierarchical path in the url
+* `query`       - query component in the url
+* `fragment`    - fragment identifier in the url
 * `protocol`    - protocol used by the client
 * `status`      - status code that the server sends back to the client
 * `size`        - size of the object returned to the client
