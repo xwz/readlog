@@ -1,4 +1,14 @@
 #!/usr/bin/python -u
+#
+# readlog - cuts apache log into pieces
+# Pipe apache logs into readlog to selectively display interesting information.
+# 
+# Example: show the access time as Unix epoch and ip addresses
+# 
+# cat /var/log/apache2/access.log | ./readlog --columns=time,ips
+# 
+# See http://github.com/xwz/readlog
+
 import sys
 from optparse import OptionParser
 from log_reader import ApacheReader
