@@ -19,11 +19,12 @@ can be compiled and installed by running:
 Command line options
 --------------------
 
-**readlog** offers 3 command line options: 
+**readlog** offers 4 command line options: 
 
 * `--columns`   - comma delimited list of column names
 * `--params`    - comma delimited list of query parameter names
-* `--date`      - date format pattern, default is Unix epoch
+* `--date`      - output date format pattern, default is Unix epoch
+* `--format`    - log format pattern, default is `common`
 
 The available column names, see http://httpd.apache.org/docs/2.2/logs.html#accesslog 
 for details
@@ -58,6 +59,11 @@ patterns see:
 
 http://docs.python.org/library/datetime.html#strftime-and-strptime-behavior
 
+The `--format` option defines the log input format, in particular, `common` and 
+`combined` corresponds to the apache common and combined log formats. A custom
+input log format is supported by specifying the pattern string as argument.
+
+See http://httpd.apache.org/docs/2.2/logs.html#accesslog for details.
 
 Credits
 -------

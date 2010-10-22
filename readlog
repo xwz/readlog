@@ -17,7 +17,7 @@ import cgi
 import datetime
 import time
 
-supported_columns = [
+default_columns = [
     'ips', 
     'username', 
     'ident', 
@@ -36,19 +36,18 @@ supported_columns = [
 ]
 
 def cli_options():
-    """
-    Returns column names and query parameter names for display.
-    """
     parser = OptionParser()
     parser.add_option("-c", "--columns", dest="columns", 
-            help="comma delimited list of columns, available columns: %s" % ", ".join(supported_columns))
+            help="comma delimited list of columns, available columns: %s" % ", ".join(default_columns))
     parser.add_option("-p", "--params", dest="params",
             help="comma delimited list of query parameter names")
     parser.add_option("-d", "--date", dest="date",
             help="date format, default is unixtimestamp")
+    parser.add_option("-f", "--format", dest="format",
+            help="log format, accepts 'common', 'combined' and custom format string")
     options, args = parser.parse_args()
     if options.columns:
-        columns = [c for c in options.columns.split(",") if c in supported_columns]
+        columns = options.columns.split(",")
     else:
         columns = []
     if options.params:
@@ -56,16 +55,22 @@ def cli_options():
     else:
         params = []
     if len(params)==0 and len(columns)==0:
-        columns = supported_columns
-    return columns, params, options.date
+        columns = default_columns
+    return columns, params, options.date, options.format
     
-def readlog(columns, params, dateformat):
-    for log in ApacheReader(sys.stdin):
+def readlog(columns, params, dateformat, logformat):
+    if logformat=="common":
+        logformat = ApacheReader.COMMON
+    elif logformat=="combined" or not logformat:
+        logformat = ApacheReader.COMBINED
+
+    for log in ApacheReader(sys.stdin, logformat):
         log["ips"] = ",".join(log["ips"])
-        if dateformat:
-            log["time"] = log["time"].strftime(dateformat)
-        else:
-            log["time"] = "%d" % time.mktime(log["time"].timetuple())            
+        if log["time"]:
+            if dateformat:
+                log["time"] = log["time"].strftime(dateformat)
+            else:
+                log["time"] = "%d" % time.mktime(log["time"].timetuple())            
         url = urlparse.urlparse(log["path"])
         log["url"] = log["path"]
         log["path"] = url.path
@@ -77,5 +82,5 @@ def readlog(columns, params, dateformat):
         print " ".join(str(i) for i in info)
 
 if __name__ == "__main__":
-    columns, params, dateformat = cli_options()
-    readlog(columns, params, dateformat)
+    columns, params, dateformat, logformat = cli_options()
+    readlog(columns, params, dateformat, logformat)
